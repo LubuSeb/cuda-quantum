@@ -16,6 +16,7 @@
 #include "common/ObserveResult.h"
 #include "common/ThunkInterface.h"
 #include "nvqpp_interface.h"
+#include "cudaq/Target/CompileTarget.h"
 #include "cudaq/remote_capabilities.h"
 #include "cudaq/utils/cudaq_utils.h"
 #include <cstring>
@@ -204,10 +205,11 @@ public:
   unifiedLaunchModule(const AnyModule &module, KernelArgs args,
                       std::size_t qpu_id = 0);
 
-  [[nodiscard]] CompiledModule compileModule(const SourceModule &src,
-                                             const KernelArgs &args,
-                                             std::size_t qpu_id,
-                                             bool isEntryPoint);
+  [[nodiscard]] std::unique_ptr<cudaq::CompileTarget>
+  getCompileTarget(cudaq::ExecutionContext *context, std::size_t qpu_id = 0);
+
+  [[nodiscard]] std::unique_ptr<cudaq::CompileTarget>
+  getCompileTarget(cudaq::sample_policy &policy, std::size_t qpu_id = 0);
 
   /// List all available platforms
   static std::vector<std::string> list_platforms();

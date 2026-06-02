@@ -36,6 +36,27 @@ inline bool is_emulated_platform() {
   return getQuantumPlatformInternal()->is_emulated();
 }
 
+/// @brief Return true if the quantum platform is a simulator.
+inline bool is_simulator_platform() {
+  return getQuantumPlatformInternal()->is_simulator();
+}
+
+inline std::unique_ptr<cudaq::CompileTarget>
+get_compile_target(cudaq::ExecutionContext *context) {
+  return getQuantumPlatformInternal()->getCompileTarget(context);
+}
+
+inline std::unique_ptr<cudaq::CompileTarget>
+get_compile_target(cudaq::sample_policy &policy) {
+  return getQuantumPlatformInternal()->getCompileTarget(policy);
+}
+
+/// Get the default compile target configuration used when JITing for Python.
+std::unique_ptr<cudaq::CompileTarget>
+getDefaultPythonCompileTarget(ExecutionContext *context);
+std::unique_ptr<cudaq::CompileTarget>
+getDefaultPythonCompileTarget(sample_policy &policy);
+
 // Declare this function, implemented elsewhere
 std::string getQIR(const std::string &);
 

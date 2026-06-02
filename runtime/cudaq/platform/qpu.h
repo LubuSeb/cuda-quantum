@@ -162,29 +162,9 @@ public:
   [[nodiscard]] virtual std::unique_ptr<CompileTarget>
   getCompileTarget(ExecutionContext *context);
 
-  [[nodiscard]] virtual CompiledModule
-  compileModule(const SourceModule &src, KernelArgs args, bool isEntryPoint);
-
-  [[nodiscard]] virtual CompiledModule compileModule(sample_policy &,
-                                                     const SourceModule &src,
-                                                     KernelArgs args,
-                                                     bool isEntryPoint);
-
   /// @brief Notify the QPU that a new random seed value is set.
   /// By default do nothing, let subclasses override.
   virtual void onRandomSeedSet(std::size_t seed) {}
-};
-
-struct ModuleLauncher : public registry::RegisteredType<ModuleLauncher> {
-  virtual ~ModuleLauncher() = default;
-
-  /// Compile (specialize + JIT) a kernel module and return a ready-to-execute
-  /// CompiledModule.
-  virtual CompiledModule compileModule(const SourceModule &src, KernelArgs args,
-                                       bool isEntryPoint) = 0;
-
-  virtual std::unique_ptr<CompileTarget>
-  getCompileTarget(ExecutionContext *context) = 0;
 };
 
 } // namespace cudaq

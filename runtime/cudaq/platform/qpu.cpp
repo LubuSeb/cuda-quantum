@@ -17,22 +17,11 @@
 #include "cudaq/runtime/logger/logger.h"
 #include "cudaq/utils/cudaq_utils.h"
 #include <cstring>
+#include <optional>
 #include <stdexcept>
 
 using namespace cudaq_internal::compiler;
 using namespace cudaq;
-
-CUDAQ_INSTANTIATE_REGISTRY(cudaq::ModuleLauncher::RegistryType)
-
-// Bridge so the Python extension can register PythonLauncher into this DSO's
-// registry. CUDA-Q Registry uses static inline Head/Tail, so each DSO that
-// instantiates the template gets its own copy; launchModule runs in this DSO
-// and reads the empty list. Registering via this function adds to our list.
-extern "C" void cudaq_add_module_launcher_node(void *node_ptr) {
-  using Node = cudaq::Registry<cudaq::ModuleLauncher>::node;
-  cudaq::Registry<cudaq::ModuleLauncher>::add_node(
-      static_cast<Node *>(node_ptr));
-}
 
 cudaq::KernelThunkResultType
 cudaq::QPU::unifiedLaunchModule(const AnyModule &module, KernelArgs args) {
@@ -107,39 +96,18 @@ cudaq::QPU::runJITCompiledModule(const CompiledModule &compiled,
   return {nullptr, 0};
 }
 
-cudaq::CompiledModule cudaq::QPU::compileModule(sample_policy &,
-                                                const SourceModule &src,
-                                                KernelArgs args,
-                                                bool isEntryPoint) {
-  return compileModule(src, args, isEntryPoint);
-}
-
 std::unique_ptr<cudaq::CompileTarget>
 cudaq::QPU::getCompileTarget(ExecutionContext *context) {
-  auto launcher = registry::get<ModuleLauncher>("default");
-  if (!launcher)
-    throw std::runtime_error(
-        "No ModuleLauncher registered with name 'default'. This may be a "
-        "result of attempting to use `compileModule` outside Python.");
-  return launcher->getCompileTarget(context);
-}
-std::unique_ptr<cudaq::CompileTarget>
-cudaq::QPU::getCompileTarget(sample_policy &) {
-  throw std::runtime_error(
-      "no CompileTarget defined for sample_policy this QPU");
+  // TODO: This is currently only used for Python. Will have to be updated if we
+  // want to support C++.
+  return getDefaultPythonCompileTarget(context);
 }
 
-cudaq::CompiledModule cudaq::QPU::compileModule(const SourceModule &src,
-                                                KernelArgs args,
-                                                bool isEntryPoint) {
-  auto launcher = registry::get<ModuleLauncher>("default");
-  if (!launcher)
-    throw std::runtime_error(
-        "No ModuleLauncher registered with name 'default'. This may be a "
-        "result of attempting to use `compileModule` outside Python.");
-  ScopedTraceWithContext(cudaq::TIMING_LAUNCH, "QPU::compileModule",
-                         src.getName());
-  return launcher->compileModule(src, args, isEntryPoint);
+std::unique_ptr<cudaq::CompileTarget>
+cudaq::QPU::getCompileTarget(sample_policy &policy) {
+  // TODO: This is currently only used for Python. Will have to be updated if we
+  // want to support C++.
+  return getDefaultPythonCompileTarget(policy);
 }
 
 void QPU::handleObservation(ExecutionContext &context) const {
