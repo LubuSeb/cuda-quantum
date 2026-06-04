@@ -33,6 +33,7 @@ Deuteron
 Deutsch
 Devcontainer
 Doxygen
+Embeddings
 Exponentiating
 FPGA
 FPGAs
