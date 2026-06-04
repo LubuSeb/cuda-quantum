@@ -6,7 +6,7 @@
  * the terms of the Apache License 2.0 which accompanies this distribution.    *
  ******************************************************************************/
 
-// UNSUPPORTED: *
+// UNSUPPORTED: always
 // RUN: cudaq-quake %s | FileCheck %s
 
 #include <cudaq.h>
