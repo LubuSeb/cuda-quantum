@@ -7,9 +7,14 @@
  ******************************************************************************/
 
 // UNSUPPORTED: always
-// RUN: cudaq-quake %s | FileCheck %s
+// RUN: cudaq-quake -Xcudaq -Wno-literal-conversion %s | FileCheck %s
 
 #include <cudaq.h>
+
+#ifdef __APPLE__
+#include <complex>
+using namespace std::complex_literals;
+#endif
 
 CUDAQ_REGISTER_OPERATION(unitary_3,
                          1, // Number of qubits
