@@ -11,7 +11,6 @@
 #include "common/CompiledModule.h"
 #include "common/Environment.h"
 #include "common/ExecutionContext.h"
-#include "common/RuntimeTarget.h"
 #include "common/Timing.h"
 #include "cudaq_internal/compiler/CompiledModuleHelper.h"
 #include "cudaq_internal/compiler/Compiler.h"

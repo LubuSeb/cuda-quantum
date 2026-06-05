@@ -18,13 +18,13 @@
 #include "cudaq_internal/compiler/JIT.h"
 #include "cudaq_internal/compiler/RuntimeMLIR.h"
 #include "nlohmann/json.hpp"
+#include "cudaq/Optimizer/Builder/Marshal.h"
 #include "cudaq/Optimizer/Builder/Runtime.h"
 #include "cudaq/Optimizer/CodeGen/QIRAttributeNames.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeInterfaces.h"
 #include "cudaq/Optimizer/Transforms/AddMetadata.h"
 #include "cudaq/Optimizer/Transforms/Passes.h"
 #include "cudaq/Optimizer/Transforms/ResourceCount.h"
-#include "cudaq/Target/TargetConfig.h"
 #include "cudaq/runtime/logger/logger.h"
 #include "cudaq/utils/cudaq_utils.h"
 #include "llvm/ADT/SmallSet.h"
@@ -245,7 +245,10 @@ cudaq_internal::compiler::Compiler::prepareModule(const std::string &kernelName,
       cudaq_internal::compiler::ArgumentConverter argCon(kernelName, moduleOp);
       // Must stay in scope as `eraseNonCallableArguments` may populate it
       std::vector<void *> closureArgs;
-      if (isEntryPoint && !target->fullySpecialize) {
+      if (cudaq::opt::marshal::isFullySynthesized(epFunc)) {
+        // Already fully specialized, nothing to do.
+        isFullySpecialized = true;
+      } else if (isEntryPoint && !target->fullySpecialize) {
         // We disable specialization by erasing args that should not be inlined
         isFullySpecialized =
             eraseNonCallableArguments(*rawArgs, closureArgs, epFunc);
@@ -613,7 +616,7 @@ mlir::ModuleOp cudaq_internal::compiler::Compiler::lowerQuakeCodeBuildModule(
     mlir::StringRef kernelName = [fullFuncName]() {
       mlir::StringRef retVal = fullFuncName;
       // TODO - clean this up to not have to do this. Considering the
-      // module's map, or cudaq::details::getKernelName(). But make sure it
+      // module's map, or cudaq::detail::getKernelName(). But make sure it
       // works for standard C++ functions.
 
       // Only get the portion before the first ".".

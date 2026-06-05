@@ -35,7 +35,7 @@ class optimizer;
 struct RuntimeTarget;
 class LinkedLibraryHolder;
 
-namespace __internal__ {
+namespace detail {
 class TargetSetter;
 }
 
@@ -226,7 +226,7 @@ public:
 
 protected:
   friend class cudaq::LinkedLibraryHolder;
-  friend class cudaq::__internal__::TargetSetter;
+  friend class cudaq::detail::TargetSetter;
   /// @brief Set the target backend, by default do nothing, let subclasses
   /// override
   /// @param name
