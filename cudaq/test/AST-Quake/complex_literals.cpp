@@ -7,14 +7,15 @@
  ******************************************************************************/
 
 // UNSUPPORTED: always
-// RUN: cudaq-quake -Xcudaq -Wno-literal-conversion %s | FileCheck %s
+
+// Note: The MacOS build in the CI ignores the UNSUPPORTED flag and chokes.
+//
+// RUN: if [[ "$OSTYPE" == "darwin"* ]]; \
+// RUN: then echo ignored ; \
+// RUN: else cudaq-quake -Xcudaq -Wno-literal-conversion %s | FileCheck %s ; \
+// RUN: fi
 
 #include <cudaq.h>
-
-#ifdef __APPLE__
-#include <complex>
-using namespace std::complex_literals;
-#endif
 
 CUDAQ_REGISTER_OPERATION(unitary_3,
                          1, // Number of qubits
