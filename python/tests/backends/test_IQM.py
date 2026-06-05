@@ -280,7 +280,8 @@ def test_2q_unitary_synthesis():
 
     counts = cudaq.sample(bell_pair)
     # Gives result like { 00:500 01:0 10:0 11:500 }
-    assert counts['01'] == 0 and counts['10'] == 0
+    assert ('01' not in counts or counts['01'] == 0) and ('10' not in counts or
+                                                          counts['10'] == 0)
 
     cudaq.register_operation(
         "custom_cz", np.array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,
